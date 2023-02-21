@@ -54,22 +54,32 @@ sheet = np.zeros((84,numInterval))   #이게 악보, 각 음계의 i 번째 inte
 #################################################################### 
 
 #최소 자승법 ㄱ 한번 하고 작은 amplitude 음계들 버리고 한번 더
-C=
+C=np.zeros((84,84))
 for i in range(84):
     for j in range(84):
-        C#아직
-
-for i in range(numInterval):
-    #
+        for k in range(interval):
+            C[i][j] += mixed[i][k]*mixed[j][k]
+invC = np.linalg.inv(C)
     
 ####################################################################  
+
+for i in range(numInterval):
+    d=np.zeros((84,1))
+    for j in range(84):
+        for k in range(interval):
+            d[j] += v_data[i*interval+k]*mixed[j][k]
+    sheet[i] = np.dot(invC,d).reshape(84)
     
+sheet 
+
+#사실 아직 작은 amplitude 음 버리는거 안함 근데 이거 확인되면 ㄱ  
+
+####################################################################
+
 #이제 이거 다합쳐서 하나로 만들어야댐..
 
 music=np.empty(interval*numInterval)
 for i in range(numInterval):
-    for j in range(12):
-        for k in range(7):   
-            for l in range(interval):
-                music[i*interval+l]+=sheet[j][k][i]*mixed[j][k][l]     #여긴 확인 못해봤는데 이거도 ㅈㄴ 오래걸리던데 ㅈ된거냐
-                #음계 index를 12*7에서 84로 바꿨는데 아직 수정 안함
+    for j in range(84):
+        for k in range(interval):
+                music[i*interval+k]+=sheet[j][k]*mixed[j][k]     #여긴 확인 못해봤는데 이거도 ㅈㄴ 오래걸리던데 ㅈ된거냐
