@@ -1,0 +1,30 @@
+pip install sounddevice #처음 돌릴때만 하고 이후에 지우셈
+
+import numpy as np
+import sounddevice as sd
+
+rate = 44100                                   # SampleRate, 44100 Sampling per 1 sec, 44100Hz         
+sec = 1                                        # Signal Duration: 1 sec
+t = np.arange(0, sec, 1/rate)                  # Time array contains range of [0:1]
+                                               # unit time: 1/rate
+
+freqMid=[261.63, 277.18, 293.66, 311.13, 329.63, 349.23, 369.99, 392.00, 415.30, 440.00, 466.16, 493.88]
+freqNote=np.ones((12,7))
+for i in range(12):
+    for j in range(7):
+        freqNote[i][j]=freqMid[i]*pow(2, j-4)
+freqNote
+
+signal=np.empty((6,12,7,rate*sec))
+mixed=np.empty((12,7,rate*sec))
+
+#mixed[음계][옥타브]가 파형 리스트임
+#ex mixed[4][5]면 가운데서 2옥 올린 미
+
+for i in range(6):
+    for j in range(12):
+        for k in range(7):
+            signal[i][j][k] = pow(2,-1*i)*np.sin(2*np.pi*i*freqNote[j][k]*t )
+            mixed[j][k]+=signal[i][j][k]
+            
+sd.play(mixed[5][4])
