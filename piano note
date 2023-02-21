@@ -49,7 +49,7 @@ sd.play(mixed[40])
 
 #################################################################### 
 
-sheet = np.zeros((84,numInterval))   #이게 악보, 각 음계의 i 번째 interval에서 그 음의 amplitude를 저장할거임
+sheet = np.zeros((numInterval,84))   #이게 악보, 각 음계의 i 번째 interval에서 그 음의 amplitude를 저장할거임
 
 #################################################################### 
 
@@ -82,4 +82,4 @@ music=np.empty(interval*numInterval)
 for i in range(numInterval):
     for j in range(84):
         for k in range(interval):
-                music[i*interval+k]+=sheet[j][k]*mixed[j][k]     #여긴 확인 못해봤는데 이거도 ㅈㄴ 오래걸리던데 ㅈ된거냐
+                music[i*interval+k]+=sheet[i][j]*mixed[j][k]     #여긴 확인 못해봤는데 이거도 ㅈㄴ 오래걸리던데 ㅈ된거냐
