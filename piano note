@@ -1,30 +1,75 @@
-pip install sounddevice #처음 돌릴때만 하고 이후에 지우셈
+pip install sounddevice       #첨 실행할때만 하고 나중엔 지우셈
+
+#################################################################### 이거 나올때마다 다른 칸에 넣어서 각각 실행하면 편함
 
 import numpy as np
+import math
 import sounddevice as sd
+from  scipy.io import wavfile
 
-rate = 44100                                   # SampleRate, 44100 Sampling per 1 sec, 44100Hz         
-sec = 1                                        # Signal Duration: 1 sec
-t = np.arange(0, sec, 1/rate)                  # Time array contains range of [0:1]
-                                               # unit time: 1/rate
+#################################################################### 
+
+v_rate, v_data = wavfile.read('사랑할수록 (화생방실 클레오파트라).wav')    #rate와 파형 리스트 각각 반환해줌
+
+if(len(v_data.shape)>1):                            # 양쪽 다른 스테레오 사운드면 N*2 행렬로 나와서 걍 한쪽 버려버림. 평균때리면 ㅈ되더라?
+        v_data=np.array(v_data[:,1])
+
+#sd.play(v_data)     
+
+t = np.arange(0, 1, 1/v_rate)                  # Time array contains range of [0:1]
+                                               # unit time: 1/v_rate
+sampleLength = np.size(v_data)                 # 노래 파형 리스트 크기 = 샘플 개수
+interval = 2000                                # 음 최소단위 샘플 몇 칸으로 할건지
+numInterval = math.floor(sampleLength/interval)  # 노래 동안 인터벌 수, 저거 정수 아닐까봐 내림함
+
+#################################################################### 
 
 freqMid=[261.63, 277.18, 293.66, 311.13, 329.63, 349.23, 369.99, 392.00, 415.30, 440.00, 466.16, 493.88]
-freqNote=np.ones((12,7))
-for i in range(12):
-    for j in range(7):
-        freqNote[i][j]=freqMid[i]*pow(2, j-4)
+freqNote=np.empty(84)
+
+
+for i in range(84):
+    freqNote[i]=freqMid[i%12]*pow(2, divmod(i,12)[0]-3)        # 옥타브 7개, 그중 가운데가 표준 음
+            
 freqNote
 
-signal=np.empty((6,12,7,rate*sec))
-mixed=np.empty((12,7,rate*sec))
+#################################################################### 
 
-#mixed[음계][옥타브]가 파형 리스트임
-#ex mixed[4][5]면 가운데서 2옥 올린 미
+signal=np.empty((6,84,v_rate))
+mixed=np.empty((84,v_rate))
+
+#mixed[음계][옥타브]가 최종 피아노 파형 리스트이고 signal은 걍 사인파 합성한거
 
 for i in range(6):
-    for j in range(12):
-        for k in range(7):
-            signal[i][j][k] = pow(2,-1*i)*np.sin(2*np.pi*i*freqNote[j][k]*t )
-            mixed[j][k]+=signal[i][j][k]
+    for j in range(84):
+            signal[i][j] = pow(2,-1*i)*np.sin(2*np.pi*i*freqNote[j]*t )
+            mixed[j]+=signal[i][j]
             
-sd.play(mixed[5][4])
+sd.play(mixed[40])
+
+#################################################################### 
+
+sheet = np.zeros((84,numInterval))   #이게 악보, 각 음계의 i 번째 interval에서 그 음의 amplitude를 저장할거임
+
+#################################################################### 
+
+#최소 자승법 ㄱ 한번 하고 작은 amplitude 음계들 버리고 한번 더
+C=
+for i in range(84):
+    for j in range(84):
+        C#아직
+
+for i in range(numInterval):
+    #
+    
+####################################################################  
+    
+#이제 이거 다합쳐서 하나로 만들어야댐..
+
+music=np.empty(interval*numInterval)
+for i in range(numInterval):
+    for j in range(12):
+        for k in range(7):   
+            for l in range(interval):
+                music[i*interval+l]+=sheet[j][k][i]*mixed[j][k][l]     #여긴 확인 못해봤는데 이거도 ㅈㄴ 오래걸리던데 ㅈ된거냐
+                #음계 index를 12*7에서 84로 바꿨는데 아직 수정 안함
