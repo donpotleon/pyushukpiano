@@ -1,0 +1,3 @@
+pip install ffmpeg
+pip install ffprobe
+pip install pydub
