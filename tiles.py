@@ -3,7 +3,7 @@
 
 # In[10]:
 
-
+!pip install pygame
 import numpy as np
 import math
 import pygame
